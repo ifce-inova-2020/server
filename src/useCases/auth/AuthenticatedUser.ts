@@ -23,13 +23,13 @@ export async function Authenticated(req: Request, res: Response) {
     });
 
     if (!userSearched) {
-      return res.status(400).json({ message: "Email ou senha incorreto" });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
     const passwordMatch = await compare(password, userSearched.password);
 
     if (!passwordMatch) {
-      return res.status(400).json({ message: "Email ou senha incorreto" });
+      return res.status(400).json({ message: "Email ou senha incorretos" });
     }
 
     const key = process.env.KEY!;
@@ -49,6 +49,6 @@ export async function Authenticated(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    return res.status(502).json({ message: "Erro externo. Tente novamente." });
+    return res.status(500).json({ message: "Erro interno" });
   }
 }

@@ -1,11 +1,15 @@
 import { Router } from "express";
 import { Authenticated } from "../../useCases/auth/AuthenticatedUser";
+import { consultRouter } from "./consultRouter";
 import { userRouter } from "./userRouter";
 
 export const router = Router();
 
 router.get("/", (req, res) =>
-  res.json({ message: "Bem vindo a API Post it!" })
+  res.json({
+    message: "Bem vindo(a) a API do Projeto Inova 2022 do IFCE Campus Aracati.",
+  })
 );
-router.use("/users", userRouter);
+router.use("/user", userRouter);
+router.use("/c", consultRouter);
 router.post("/auth", Authenticated);

@@ -5,7 +5,7 @@ import { prisma } from "../../api/middlewares/prisma/PrismaClient";
 import { UserModel } from "../../core/models/UserModel";
 
 export async function updateUser(req: Request, res: Response) {
-  const { id, name, email, password }: UserModel = req.body;
+  const { id, name, email, password, campus }: UserModel = req.body;
 
   try {
     const userExists = await prisma.user.findUnique({ where: { id } });
@@ -16,32 +16,37 @@ export async function updateUser(req: Request, res: Response) {
     return res.status(502).json({ message: "Erro externo. Tente novamente." });
   }
 
-  const newData: any = new Object();
+  const newUser: any = new Object();
 
   if (name) {
-    newData.name = name;
+    newUser.name = name;
   }
 
   if (email) {
-    newData.email = email;
+    newUser.email = email;
+  }
+
+  if (campus) {
+    newUser.campus = campus;
   }
 
   if (password) {
-    if (password.length < 30 && password.length > 7) {
-      const passwordHash = await hash(password, 8);
+    if (password.length < 30 && password.length > 5) {
+      const passwordHash = await hash(password, 6);
 
-      newData.password = passwordHash;
+      newUser.password = passwordHash;
     } else return res.status(400).json({ message: "Erro. Campos inválidos" });
   }
 
   try {
-    const newUser = await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id },
-      data: newData,
+      data: newUser,
+      select: { name: true, email: true, type: true, campus: true },
     });
 
-    return res.status(201).json({ user: newUser });
+    return res.status(201).json({ user });
   } catch (error) {
-    return res.status(502).json({ message: "Erro externo. Tente novamente." });
+    return res.status(500).json({ message: "Erro interno" });
   }
 }

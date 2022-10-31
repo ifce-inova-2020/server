@@ -6,6 +6,33 @@ import { UserModel } from "../../core/models/UserModel";
 export async function createUser(req: Request, res: Response) {
   let { type = "user", name, email, password, campus }: UserModel = req.body;
 
+  // Validação se criador é admin
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(401).json({ message: "Não autenticado" });
+  }
+
+  try {
+    const creator = await prisma.user.findFirst({
+      where: { id: id },
+      select: { type: true },
+    });
+
+    if (!creator)
+      if (id !== process.env.KEY_ADMIN) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+
+    if (creator?.type === "admin") {
+    } else {
+      return res.status(403).json({ message: "Não autorizado" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Erro interno" });
+  }
+
+  // Validação dos campos
   const formatEmailValid = /\S+@\S+\.\S+/;
 
   if (!name || !email || !password || !campus)
@@ -15,20 +42,21 @@ export async function createUser(req: Request, res: Response) {
     return res.status(400).json({ message: "Email inválido" });
 
   try {
-    const checkIfEmailAlreadyExists = await prisma.user.findUnique({
+    const checkExistingEmail = await prisma.user.findUnique({
       where: { email },
     });
-    if (checkIfEmailAlreadyExists)
+    if (checkExistingEmail)
       return res.status(400).json({ message: "Email já cadastrado" });
   } catch (error) {
-    return res.status(502).json({ message: "Erro externo. Tente novamente." });
+    return res.status(500).json({ message: "Erro interno" });
   }
 
-  if (password.length < 8)
+  if (password.length < 6)
     return res.status(400).json({ message: "Senha inválida" });
 
-  const passwordHash = await hash(password, 8);
+  const passwordHash = await hash(password, 6);
 
+  // Criação do novo usuário
   try {
     await prisma.user.create({
       data: { type, name, email, password: passwordHash, campus },
@@ -37,6 +65,6 @@ export async function createUser(req: Request, res: Response) {
     return res.status(201).json({ message: "Usuário cadastrado com sucesso." });
   } catch (error) {
     console.log(error);
-    return res.status(502).json({ message: "Erro externo. Tente novamente" });
+    return res.status(502).json({ message: "Erro interno. Tente novamente" });
   }
 }

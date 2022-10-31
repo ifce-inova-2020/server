@@ -13,10 +13,16 @@ export async function ensureAuthenticated(
   const token = authToken.split(" ")[1];
 
   try {
-    verify(token, process.env.KEY!);
+    const decodedToken = verify(token, process.env.KEY!);
 
-    return next();
-  } catch (err) {
+    let { id } = req.body;
+    if (!id) ({ id } = req.params);
+
+    if (id === decodedToken.sub) return next();
+    console.log(id);
+    console.log(decodedToken.sub);
     res.status(403).json({ message: "Não autorizado." });
+  } catch (err) {
+    res.status(500).json({ message: "Erro interno" });
   }
 }

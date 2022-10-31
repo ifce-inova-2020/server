@@ -10,12 +10,12 @@ import { deleteUser } from "../../useCases/user/deleteUser";
 
 export const userRouter = Router();
 
-// userRouter.get("/", getAllUsers);
+userRouter.get("/", getAllUsers);
 
 // userRouter.get("/:id", ensureAuthenticated, getUserByID);
 
-userRouter.post("/", createUser);
+userRouter.post("/:id", createUser);
 
-// userRouter.put("/", ensureAuthenticated, updateUser);
+userRouter.put("/", ensureAuthenticated, updateUser);
 
-// userRouter.delete("/:id", ensureAuthenticated, deleteUser);
+userRouter.delete("/:id", ensureAuthenticated, deleteUser);
