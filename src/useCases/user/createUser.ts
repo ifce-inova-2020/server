@@ -14,15 +14,15 @@ export async function createUser(req: Request, res: Response) {
   }
 
   try {
-    const creator = await prisma.user.findFirst({
+    let creator = await prisma.user.findFirst({
       where: { id: id },
       select: { type: true },
     });
 
     if (!creator)
-      if (id !== process.env.KEY_ADMIN) {
-        return res.status(401).json({ message: "Não autenticado" });
-      }
+      if (id === process.env.KEY_ADMIN) {
+        creator = { type: "admin" };
+      } else return res.status(401).json({ message: "Não autenticado" });
 
     if (creator?.type === "admin") {
     } else {
