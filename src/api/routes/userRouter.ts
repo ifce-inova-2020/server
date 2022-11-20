@@ -2,11 +2,11 @@ import { Router } from "express";
 
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
-import { createUser } from "../../useCases/user/createUser";
-import { getUserByID } from "../../useCases/user/getUserByID";
-import { getAllUsers } from "../../useCases/user/getAllUsers";
-import { updateUser } from "../../useCases/user/updateUser";
-import { deleteUser } from "../../useCases/user/deleteUser";
+import { createUser } from "../../stories/user/createUser";
+import { getUserByID } from "../../stories/user/getUserByID";
+import { getAllUsers } from "../../stories/user/getAllUsers";
+import { updateUser } from "../../stories/user/updateUser";
+import { deleteUser } from "../../stories/user/deleteUser";
 
 export const userRouter = Router();
 

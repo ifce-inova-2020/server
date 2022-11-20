@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { UserModel } from "../../core/models/UserModel";
-import { prisma } from "../../api/middlewares/prisma/PrismaClient";
+import { UserModel } from "../../models/UserModel";
+import { prisma } from "../../services/prisma";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 

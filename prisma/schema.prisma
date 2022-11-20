@@ -18,3 +18,7 @@ model User {
   @@map("users")
   @@unique([id, email])
 }
+
+model ConsumerMinutes {
+  id String @id @default(uuid())
+}

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { hash } from "bcryptjs";
-import { prisma } from "../../api/middlewares/prisma/PrismaClient";
-import { UserModel } from "../../core/models/UserModel";
+import { prisma } from "../../services/prisma";
+import { UserModel } from "../../models/UserModel";
 
 export async function createUser(req: Request, res: Response) {
   let { type = "user", name, email, password, campus }: UserModel = req.body;

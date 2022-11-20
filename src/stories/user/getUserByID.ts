@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../../api/middlewares/prisma/PrismaClient";
+import { prisma } from "../../services/prisma";
 
 export async function getUserByID(req: Request, res: Response) {
   const { id } = req.params;
