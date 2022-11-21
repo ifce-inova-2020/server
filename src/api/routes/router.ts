@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Authenticated } from "../../stories/auth/AuthenticatedUser";
 import { consultRouter } from "./consultRouter";
+import { consumerRouter } from "./consumerRouter";
 import { userRouter } from "./userRouter";
 
 export const router = Router();
@@ -12,4 +13,5 @@ router.get("/", (req, res) =>
 );
 router.use("/user", userRouter);
 router.use("/c", consultRouter);
+router.use("/consumer", consumerRouter);
 router.post("/auth", Authenticated);
