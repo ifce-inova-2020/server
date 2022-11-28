@@ -3,6 +3,11 @@ import { Readable } from "stream";
 import readline from "readline";
 
 import { multer } from "../../services/multer";
+import { prisma } from "../../services/prisma";
+
+import { consumerController } from "../../stories/consumer/index";
+
+const consumer = consumerController();
 
 export const consumerRouter = Router();
 
@@ -27,6 +32,7 @@ consumerRouter.post(
       input: readableFile,
     });
 
+    let csv;
     let count = 0;
     let lines = {
       pulso_ativo_ponta: 0,
@@ -34,6 +40,14 @@ consumerRouter.post(
       pulso_reativo_ponta: 0,
       pulso_reativo_fora_ponta: 0,
     };
+
+    try {
+      csv = await consumer.createConsumerByCSV();
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(csv);
 
     for await (let line of readableLines) {
       count++;
@@ -59,18 +73,17 @@ consumerRouter.post(
       //   },
       // });
     }
-    console.log(lines);
 
-    console.log({
-      media_pulso_ativo: {
-        ponta: lines.pulso_ativo_ponta / 900,
-        fora_ponta: lines.pulso_ativo_fora_ponta / 900,
-      },
-      media_pulso_reativo: {
-        ponta: lines.pulso_reativo_ponta / 900,
-        fora_ponta: lines.pulso_reativo_fora_ponta / 900,
-      },
-    });
+    // console.log({
+    //   media_pulso_ativo: {
+    //     ponta: lines.pulso_ativo_ponta / 900,
+    //     fora_ponta: lines.pulso_ativo_fora_ponta / 900,
+    //   },
+    //   media_pulso_reativo: {
+    //     ponta: lines.pulso_reativo_ponta / 900,
+    //     fora_ponta: lines.pulso_reativo_fora_ponta / 900,
+    //   },
+    // });
 
     return res.status(200).json({ message: "Arquivo enviado com sucesso" });
   }
