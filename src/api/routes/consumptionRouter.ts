@@ -1,22 +1,26 @@
 import { Request, Response, Router } from "express";
 import { Readable } from "stream";
 import readline from "readline";
+import fs from "fs";
 
 import { multer } from "../../services/multer";
 import { prisma } from "../../services/prisma";
 
-export const consumerRouter = Router();
+export const consumptionRouter = Router();
 
-consumerRouter.get("/", (req: Request, res: Response) => {
+consumptionRouter.get("/", (req: Request, res: Response) => {
   return res.status(200).json({ message: "Rota dos consumos" });
 });
 
-consumerRouter.post(
+consumptionRouter.post(
   "/file",
   multer.single("file"),
   async (req: Request, res: Response) => {
     // pega o arquivo CSV da requisição através do MULTER
     const { buffer } = req.file!;
+
+    if (!buffer)
+      return res.status(400).json({ message: "Arquivo inexistente" });
 
     // transformar em um arquivo manipulável
     const readableFile = new Readable();
@@ -31,13 +35,13 @@ consumerRouter.post(
     const date = new Date().toISOString();
 
     try {
-      // const csv = await prisma.consumerCSV.create({
-      //   data: {
-      //     createdAt: date,
-      //   },
-      // });
+      const csv = await prisma.consumptionCSV.create({
+        data: {
+          createdAt: date,
+        },
+      });
 
-      let count = 0;
+      let count = -1;
       let lines = {
         pulso_ativo_ponta: 0,
         pulso_ativo_fora_ponta: 0,
@@ -45,46 +49,54 @@ consumerRouter.post(
         pulso_reativo_fora_ponta: 0,
       };
 
-      const data = {
+      let data = {
         header: {
-          m_pa_p: 0,
-          m_pa_fp: 0,
-          m_pr_p: 0,
-          m_pr_fp: 0,
+          t_pa_p: 0,
+          t_pa_fp: 0,
+          t_pr_p: 0,
+          t_pr_fp: 0,
         },
-        body: {} as {
-          id: number;
-          pa_p: number;
-          pa_fp: number;
-          pr_p: number;
-          pr_fp: number;
-        }[],
+        body: [] as {}[],
       };
+
       for await (let line of readableLines) {
         const arr = line.split(",");
 
-        if (count <= 1) continue;
+        count++;
+        if (count < 1 || count > 900) continue;
 
         lines.pulso_ativo_ponta += +arr[2];
         lines.pulso_ativo_fora_ponta += +arr[3];
         lines.pulso_reativo_ponta += +arr[4];
         lines.pulso_reativo_fora_ponta += +arr[5];
 
+        // console.log({
+        //   id: count,
+        //   pa_p: +arr[2],
+        //   pa_fp: +arr[3],
+        //   pr_p: +arr[4],
+        //   pr_fp: +arr[5],
+        // });
+
         data.body.push({
-          id: count,
+          id: +arr[1],
           pa_p: +arr[2],
           pa_fp: +arr[3],
           pr_p: +arr[4],
           pr_fp: +arr[5],
         });
-        count++;
-      }
+      } // FIM FOR
 
-      data.header.m_pa_p = lines.pulso_ativo_ponta / 900;
-      data.header.m_pa_fp = lines.pulso_ativo_fora_ponta / 900;
-      data.header.m_pr_p = lines.pulso_reativo_ponta / 900;
-      data.header.m_pr_fp = lines.pulso_reativo_fora_ponta / 900;
+      fs.writeFile("data.json", JSON.stringify(data.body), (err) => {
+        if (err) throw err;
+        return console.log("Success");
+      });
+      data.header.t_pa_p = lines.pulso_ativo_ponta;
+      data.header.t_pa_fp = lines.pulso_ativo_fora_ponta;
+      data.header.t_pr_p = lines.pulso_reativo_ponta;
+      data.header.t_pr_fp = lines.pulso_reativo_fora_ponta;
 
+      console.log(data.header);
       // try {
       //   await prisma.consumerCSV.update({
       //     where: {
@@ -100,19 +112,6 @@ consumerRouter.post(
       // } catch (error) {
       //   console.log({ message: "Error no update", error });
       // }
-
-      // console.log({
-      //   media_pulso_ativo: {
-      //     ponta: lines.pulso_ativo_ponta / 900,
-      //     fora_ponta: lines.pulso_ativo_fora_ponta / 900,
-      //   },
-      //   media_pulso_reativo: {
-      //     ponta: lines.pulso_reativo_ponta / 900,
-      //     fora_ponta: lines.pulso_reativo_fora_ponta / 900,
-      //   },
-      // });
-
-      // console.log(data);
 
       return res.status(200).json({ message: "Arquivo enviado com sucesso" });
     } catch (error) {

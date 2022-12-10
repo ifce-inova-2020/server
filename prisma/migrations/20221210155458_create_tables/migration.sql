@@ -9,7 +9,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "ConsumerCSV" (
+CREATE TABLE "ConsumptionCSV" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" TEXT NOT NULL,
     "m_pa_p" REAL,
@@ -25,8 +25,8 @@ CREATE TABLE "Wrist" (
     "pa_fp" INTEGER NOT NULL,
     "pr_p" INTEGER NOT NULL,
     "pr_fp" INTEGER NOT NULL,
-    "consumerCSVId" TEXT NOT NULL,
-    CONSTRAINT "Wrist_consumerCSVId_fkey" FOREIGN KEY ("consumerCSVId") REFERENCES "ConsumerCSV" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "ConsumptionCSVId" TEXT NOT NULL,
+    CONSTRAINT "Wrist_ConsumptionCSVId_fkey" FOREIGN KEY ("ConsumptionCSVId") REFERENCES "ConsumptionCSV" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex

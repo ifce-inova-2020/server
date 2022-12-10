@@ -1,22 +1,22 @@
 import { prisma } from "../../services/prisma";
 
-export function consumerController() {
-  async function createConsumerByCSV() {
-    return await prisma.consumerCSV.create({
+export function consumptionController() {
+  async function createConsumptionByCSV() {
+    return await prisma.consumptionCSV.create({
       data: {
         createdAt: new Date().toISOString(),
       },
     });
   }
 
-  async function updateConsumerCSV(
+  async function updateConsumptionCSV(
     id: string,
     m_pa_p: number,
     m_pa_fp: number,
     m_pr_p: number,
     m_pr_fp: number
   ) {
-    return await prisma.consumerCSV.update({
+    return await prisma.consumptionCSV.update({
       where: {
         id,
       },
@@ -45,5 +45,5 @@ export function consumerController() {
     });
   }
 
-  return { createConsumerByCSV, updateConsumerCSV, addWristInCSV };
+  return { createConsumptionByCSV, updateConsumptionCSV, addWristInCSV };
 }

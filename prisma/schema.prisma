@@ -19,7 +19,7 @@ model User {
   @@map("users")
 }
 
-model ConsumerCSV {
+model ConsumptionCSV {
   id        String   @id @default(uuid())
   createdAt String
   m_pa_p    Float?
@@ -36,7 +36,7 @@ model Wrist {
   pr_p  Int
   pr_fp Int
 
-  consumerCSVId String
+  ConsumptionCSVId String
 
-  ConsumerCSV ConsumerCSV? @relation(fields: [consumerCSVId], references: [id])
+  ConsumptionCSV ConsumptionCSV? @relation(fields: [ConsumptionCSVId], references: [id])
 }
