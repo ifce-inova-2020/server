@@ -1,0 +1,15 @@
+version: "3.1"
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "clbi4e0ln00002v6oeelbnlpa"
+      POSTGRES_DB: "energyBar"
+    ports:
+      - "5432:5432"
+    networks:
+      - db_network
+
+networks:
+  db_network:

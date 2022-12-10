@@ -8,17 +8,35 @@ datasource db {
 }
 
 model User {
-  id          String @id @default(uuid())
-  type        String
-  name        String
-  email       String @unique
-  password    String
-  campus      String
+  id       String @id @default(uuid())
+  type     String
+  name     String
+  email    String @unique
+  password String
+  campus   String
 
-  @@map("users")
   @@unique([id, email])
+  @@map("users")
 }
 
-model ConsumerMinutes {
-  id String @id @default(uuid())
+model ConsumptionCSV {
+  id        String   @id @default(uuid())
+  createdAt String
+  m_pa_p    Float?
+  m_pa_fp   Float?
+  m_pr_p    Float?
+  m_pr_fp   Float?
+  wrists    Wrist[]
+}
+
+model Wrist {
+  id    Int @id @default(autoincrement())
+  pa_p  Int
+  pa_fp Int
+  pr_p  Int
+  pr_fp Int
+
+  ConsumptionCSVId String
+
+  ConsumptionCSV ConsumptionCSV? @relation(fields: [ConsumptionCSVId], references: [id])
 }
