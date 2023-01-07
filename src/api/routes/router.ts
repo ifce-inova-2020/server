@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Authenticated } from "../../useCases/auth/AuthenticatedUser";
+import { Authenticated } from "../../stories/auth/AuthenticatedUser";
 import { consultRouter } from "./consultRouter";
 import { userRouter } from "./userRouter";
 
