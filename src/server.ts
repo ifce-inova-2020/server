@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { json } from "express";
 import { router } from "./api/routes/router";
 import cors from "cors";
