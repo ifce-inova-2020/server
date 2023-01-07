@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  type     String
+  name     String
+  email    String @unique
+  password String
+  campus   String
+
+  @@unique([id, email])
+  @@map("users")
+}
+
+model Second {
+  timestamp   DateTime @id @default(now())
+  active_p    String
+  active_fp   String
+  reactive_p  String
+  reactive_fp String
+
+  minuteId String?
+
+  Minute Minute? @relation(fields: [minuteId], references: [id])
+}
+
+model Minute {
+  id                        String   @id @default(cuid())
+  timestamp                 DateTime @default(now())
+  count_active_p_seconds    String
+  count_active_fp_seconds   String
+  count_reactive_p_seconds  String
+  count_reactive_fp_seconds String
+
+  hourId  String?
+  seconds Second[]
+
+  Hour Hour? @relation(fields: [hourId], references: [id])
+}
+
+model Hour {
+  id                        String   @id @default(cuid())
+  timestamp                 DateTime @default(now())
+  count_active_p_minutes    String
+  count_active_fp_minutes   String
+  count_reactive_p_minutes  String
+  count_reactive_fp_minutes String
+
+  dayId   String?
+  minutes Minute[]
+
+  Day Day? @relation(fields: [dayId], references: [id])
+}
+
+model Day {
+  id                      String   @id @default(cuid())
+  timestamp               DateTime @default(now())
+  count_active_p_hours    String
+  count_active_fp_hours   String
+  count_reactive_p_hours  String
+  count_reactive_fp_hours String
+
+  monthId String?
+  hours   Hour[]
+
+  Month Month? @relation(fields: [monthId], references: [id])
+}
+
+model Month {
+  id                     String   @id @default(cuid())
+  timestamp              DateTime @default(now())
+  count_active_p_days    String
+  count_active_fp_days   String
+  count_reactive_p_days  String
+  count_reactive_fp_days String
+
+  days Day[]
+}
